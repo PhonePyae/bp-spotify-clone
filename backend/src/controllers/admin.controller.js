@@ -54,7 +54,6 @@ export const createSong = async (req, res, next  ) => {
     }
 }
 
-
 // @desc    Delete a song
 export const deleteSong = async (req, res, next) => {
     try{
@@ -84,3 +83,39 @@ export const deleteSong = async (req, res, next) => {
         next(error); 
     }
 } 
+
+// @desc    Create a new album
+export const createAlbum = async (req, res, next) => {
+    try {
+        const { title, artist, releaseYear } = req.body;
+        const { imageFile } = req.files;
+
+        const imageUrl = await uploadToCloudinary(imageFile);
+
+        const album = new Album({
+            title,
+            artist,
+            releaseYear,
+            imageUrl,
+        });
+
+        await album.save(); // Save the album to the database
+        res.status(201).json({ album });
+    } catch (error) {
+        console.log('Error creating album:', error);
+        next(error); // Pass the error to the next middleware
+    }
+} 
+
+// @desc    Delete an album
+export const deleteAlbum = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        await Song.deleteMany({ albumId: id }); // Delete all songs associated with the album
+        await Album.findByIdAndDelete(id); // Delete the album from the database
+        res.status(200).json({ message: "Album deleted successfully" });
+    } catch (error) {
+        console.log('Error deleting album:', error);
+        next(error); // Pass the error to the next middleware 
+    }
+}
