@@ -119,3 +119,8 @@ export const deleteAlbum = async (req, res, next) => {
         next(error); // Pass the error to the next middleware 
     }
 }
+
+// @desc    Check if the user is an admin
+export const checkAdmin = async (req, res, next) => {
+    res.status(200).json({admin: true}); // Respond with admin status
+}
